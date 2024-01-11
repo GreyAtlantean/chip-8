@@ -66,6 +66,7 @@ int Chip8::run() {
 
 	for (int i = 0; i < 100; i++) {
 		Chip8::fetch();
+		Chip8::decode();
 	}
 /*
 	while (running) {
@@ -83,14 +84,19 @@ void Chip8::fetch() {
 	
 	currOP = (chip_mem[chip_PC] << 8 | chip_mem[chip_PC + 1]);
 
-	std::cout << std::hex << std::setw(4) << std::setfill('0') << static_cast<int>(currOP) << "\n";
-
 	chip_PC += 2;
 }
 
 void Chip8::decode() {
+	opFields.type = currOP & 0xf000;
+	opFields.x    = currOP & 0x0f00;
+	opFields.y    = currOP & 0x00f0;
+	opFields.n    = currOP & 0x000f;
 
+	opFields.nn   = currOP & 0x00ff;
+	opFields.nnn  = currOP & 0x0fff;
 }
+
 
 void Chip8::execute() {
 

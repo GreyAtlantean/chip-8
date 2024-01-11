@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <stack>
 
+#include "instruction.h"
 #include "renderer.h"
 #include "screen.h"
 
@@ -32,6 +33,7 @@ class Chip8 {
 		uint8_t soundTimer; // Sound timer
 	
 		uint16_t currOP; // current opcode
+		instruction_fields opFields; // fields for the opcode
 		
 		std::stack<uint16_t> chip_stack = {}; // Address stack
 		std::vector<uint8_t> fontset;
