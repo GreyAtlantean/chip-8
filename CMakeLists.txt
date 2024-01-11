@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 target_compile_options(${PROJECT_NAME} PUBLIC
 	-Wall
 	-Wextra
+	-Wpedantic
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC 

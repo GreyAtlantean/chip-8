@@ -7,9 +7,10 @@ class Screen {
 	public:
 		Screen(int width, int height);		
 		std::vector<std::vector<short>> pixels;
-	private:
-		int screen_w;
-		int screen_h;
+		
+		void reset_screen();
+		unsigned screen_w;
+		unsigned screen_h;
 };
 
 

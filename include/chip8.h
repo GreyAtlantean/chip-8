@@ -47,6 +47,12 @@ class Chip8 {
 
 		Screen disp; // Display
 		Renderer rend; // Renderer
+		
+		uint8_t chip_random();
+
+		std::array<uint8_t, 16> chip_keys {};
+
+		uint8_t handle_input();
 	
 };
 

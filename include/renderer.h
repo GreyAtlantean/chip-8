@@ -15,8 +15,6 @@ public:
 
 	int draw(Screen screen);
 
-
-	
 	int draw_screen(Screen screen);
 
 private:
