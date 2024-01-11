@@ -50,9 +50,16 @@ class Chip8 {
 		
 		uint8_t chip_random();
 
-		std::array<uint8_t, 16> chip_keys {};
+		uint8_t chip_keys[16];
 
-		uint8_t handle_input();
+		void handle_input();
+		void clear_keys();
+		bool is_a_key_pressed();
+		
+		uint8_t get_key();
+
+		
+		bool should_quit;
 	
 };
 

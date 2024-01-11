@@ -1,5 +1,8 @@
 #include "../include/chip8.h"
 
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_timer.h>
 #include <cstdint>
 #include <cstdlib>
 #include <iomanip>
@@ -54,6 +57,8 @@ Chip8::Chip8() : disp(64, 32){
 	for (int i = 0; i < 200; i++) {
 		rend.draw(disp);
 	}
+
+	should_quit = false;
 }
 
 Chip8::~Chip8() {
@@ -64,21 +69,18 @@ Chip8::~Chip8() {
 }
 
 int Chip8::run() {
-	bool running = true;
 
-	for (int i = 0; i < 50000; i++) {
-		Chip8::fetch();
-		Chip8::decode();
-		Chip8::execute();
-	}
-/*
-	while (running) {
+	clear_keys();
+
+	while (!should_quit) {
 		// TODO make this loop execute at 60Hz
 		Chip8::fetch();
 		Chip8::decode();
+		Chip8::handle_input();
 		Chip8::execute();
+		SDL_Delay(1000/120);
 	}
-*/
+
 	return 0;
 }
 
@@ -230,15 +232,31 @@ void Chip8::execute() {
 				rend.draw(disp);
 				break;
 			}
-		case 0xE: // TODO INPUT
+		case 0xE: 
+			switch (opFields.nn) {
+				case 0x9E: // EX9E skip if key is pressed
+					if ((int)(chip_keys[(int)registers[opFields.x] & 15])) {
+						chip_PC += 2;
+					}
+					break;
+				case 0xA1: // EXA1 skip if key is not pressed
+					if ((chip_keys[registers[(int)opFields.x] & 15]) == 0) {
+						chip_PC += 2;
+					} 
+					break;
+			}
 			break;
 		case 0xF: 
 			switch (opFields.nn) {
 				case 0x07: // FX07 - set VX to delay timer
 					registers[opFields.x] = delayTimer;
 					break;
-				case 0x0A: // FX0A - get key TODO
-					chip_PC -= 2;
+				case 0x0A: // FX0A - get key
+					if (!is_a_key_pressed()) {
+						chip_PC -= 2;
+					} else {
+						registers[opFields.x] = get_key();
+					} 
 					break;
 				case 0x15: // FX15 - set delay timer to VX
 					delayTimer = registers[opFields.x];
@@ -262,10 +280,7 @@ void Chip8::execute() {
 						break;
 					}
 				case 0x55: // FX55 - Store memory
-					std::cout << "CHIP I at: " << chip_I << std::endl;
-					std::cout << "op field is : " << opFields.x << std::endl;
 					for (unsigned i = 0; i <= opFields.x; i++) {
-						std::cout << "i is " << i << std::endl;
 						chip_mem[((chip_I + i) & 0xfff)] = registers[i];
 					}
 					break;
@@ -276,9 +291,158 @@ void Chip8::execute() {
 					break;
 			}
 	}
+	if (delayTimer > 0) {
+		delayTimer--;
+	}
+	if (soundTimer > 0) {
+		soundTimer--;
+	}
+}
 
-	delayTimer--;
-	soundTimer--;
+uint8_t Chip8::get_key() {
+	for (int i = 0; i < 16; i++) {
+		if (chip_keys[i] != 0) {
+			return (uint8_t)i;
+		}
+	}
+	return 16;
+}
+
+void Chip8::clear_keys() {
+	for (int i = 0; i < 16; i++) {
+		chip_keys[i] = 0;
+	}
+}
+
+bool Chip8::is_a_key_pressed() {
+	for (int i = 0; i < 16; i++) {
+		if (chip_keys[i] == 1) {
+			std::cout << (uint8_t)i << std::endl;
+			return true;
+		}
+	}
+	return false;
+}
+
+void Chip8::handle_input() {
+	SDL_Event event;
+	
+	if (SDL_PollEvent(&event)) {
+		switch (event.type) {
+			case SDL_QUIT:
+				should_quit = true;
+				break;
+			case SDL_KEYDOWN:
+				switch (event.key.keysym.sym) {
+					case SDLK_ESCAPE:
+						should_quit = true;
+						break;
+					case SDLK_1:
+						chip_keys[0x1] = 1;
+						break;
+					case SDLK_2:
+						chip_keys[0x2] = 1;
+						break;
+					case SDLK_3:
+						chip_keys[0x3] = 1;
+						break;
+					case SDLK_4:
+						chip_keys[0xC] = 1;
+						break;
+					case SDLK_q:
+						chip_keys[0x4] = 1;
+						break;
+					case SDLK_w:
+						chip_keys[0x5] = 1;
+						break;
+					case SDLK_e:
+						chip_keys[0x6] = 1;
+						break;
+					case SDLK_r:
+						chip_keys[0xD] = 1;
+						break;
+					case SDLK_a:
+						chip_keys[0x7] = 1;
+						break;
+					case SDLK_s:
+						chip_keys[0x8] = 1;
+						break;
+					case SDLK_d:
+						chip_keys[0x9] = 1;
+						break;
+					case SDLK_f:
+						chip_keys[0xE] = 1;
+						break;
+					case SDLK_z:
+						chip_keys[0xA] = 1;
+						break;
+					case SDLK_x:
+						chip_keys[0x0] = 1;
+						break;
+					case SDLK_c:
+						chip_keys[0xB] = 1;
+						break;
+					case SDLK_v:
+						chip_keys[0xF] = 1;
+						break;
+				}
+				break;
+				case SDL_KEYUP:
+				//clear_keys();
+				switch (event.key.keysym.sym) {
+					case SDLK_1:
+						chip_keys[0x1] = 0;
+						break;
+					case SDLK_2:
+						chip_keys[0x2] = 0;
+						break;
+					case SDLK_3:
+						chip_keys[0x3] = 0;
+						break;
+					case SDLK_4:
+						chip_keys[0xC] = 0;
+						break;
+					case SDLK_q:
+						chip_keys[0x4] = 0;
+						break;
+					case SDLK_w:
+						chip_keys[0x5] = 0;
+						break;
+					case SDLK_e:
+						chip_keys[0x6] = 0;
+						break;
+					case SDLK_r:
+						chip_keys[0xD] = 0;
+						break;
+					case SDLK_a:
+						chip_keys[0x7] = 0;
+						break;
+					case SDLK_s:
+						chip_keys[0x8] = 0;
+						break;
+					case SDLK_d:
+						chip_keys[0x9] = 0;
+						break;
+					case SDLK_f:
+						chip_keys[0xE] = 0;
+						break;
+					case SDLK_z:
+						chip_keys[0xA] = 0;
+						break;
+					case SDLK_x:
+						chip_keys[0x0] = 0;
+						break;
+					case SDLK_c:
+						chip_keys[0xB] = 0;
+						break;
+					case SDLK_v:
+						chip_keys[0xF] = 1;
+						break;
+				}
+				break;
+
+		}
+	}
 }
 
 int Chip8::load_rom(const char* fname) {
@@ -302,6 +466,8 @@ int Chip8::load_rom(const char* fname) {
 	for (std::ifstream f(fname, std::ios::binary); f.good();) {
 		chip_mem[offset++ & 0xFFF] = f.get();
 	}
+
+//	chip_mem[0x1FF] = 1;
 
 	rom.close();
 	return 0;

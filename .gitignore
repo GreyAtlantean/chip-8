@@ -2,3 +2,4 @@
 /build/*.cmake
 /build/CMakeFiles/*
 /build/Makefile
+/roms/nontest/*
