@@ -8,9 +8,9 @@ int main (int argc, char *argv[]) {
 		return 1;
 	}
 	
-	emu.print_mem();
-	emu.print_font();
-	
+	//emu.print_mem();
+	//emu.print_font();
+	emu.run();	
 	
 
 	return 0;

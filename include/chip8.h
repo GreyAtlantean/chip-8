@@ -30,9 +30,10 @@ class Chip8 {
 		
 		uint8_t delayTimer; // Delay timer
 		uint8_t soundTimer; // Sound timer
+	
+		uint16_t currOP; // current opcode
 		
 		std::stack<uint16_t> chip_stack = {}; // Address stack
-		
 		std::vector<uint8_t> fontset;
 
 		void fetch();
@@ -42,9 +43,8 @@ class Chip8 {
 		unsigned fontMemStart = 0x50;
 		unsigned progMemStart = 0x200;
 
-
 		Screen disp; // Display
-		Renderer rend;
+		Renderer rend; // Renderer
 	
 };
 

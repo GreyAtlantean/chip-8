@@ -64,17 +64,28 @@ Chip8::~Chip8() {
 int Chip8::run() {
 	bool running = true;
 
+	for (int i = 0; i < 100; i++) {
+		Chip8::fetch();
+	}
+/*
 	while (running) {
+		// TODO make this loop execute at 60Hz
 		Chip8::fetch();
 		Chip8::decode();
 		Chip8::execute();
 	}
-
+*/
 	return 0;
 }
 
 void Chip8::fetch() {
+	currOP = 0x0000;
+	
+	currOP = (chip_mem[chip_PC] << 8 | chip_mem[chip_PC + 1]);
 
+	std::cout << std::hex << std::setw(4) << std::setfill('0') << static_cast<int>(currOP) << "\n";
+
+	chip_PC += 2;
 }
 
 void Chip8::decode() {
