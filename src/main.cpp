@@ -1,19 +1,17 @@
-#include <iostream>
-
-#include "../include/renderer.h"
+#include "../include/chip8.h"
 
 int main (int argc, char *argv[]) {
 
-	Renderer app;
-	app.init();
+	Chip8 emu;
 
-	for (int i = 0; i < 100; i++) {
-
-	app.draw();
+	if (emu.load_rom("../roms/tests/1-chip8-logo.ch8") != 0) {
+		return 1;
 	}
-	app.quit();
 	
-	std::cout << "test" << std::endl;
+	emu.print_mem();
+	emu.print_font();
+	
+	
 
 	return 0;
 }

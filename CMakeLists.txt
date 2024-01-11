@@ -8,6 +8,8 @@ find_package(SDL2 REQUIRED)
 set(SOURCE_FILES
 	src/main.cpp
 	src/renderer.cpp
+	src/screen.cpp
+	src/chip8.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

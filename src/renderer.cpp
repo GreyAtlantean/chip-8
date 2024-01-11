@@ -7,6 +7,7 @@
 
 
 
+
 Renderer::Renderer() {
 	
 }
@@ -49,15 +50,52 @@ int Renderer::init() {
 
 }
 
-int Renderer::draw() {
+int Renderer::draw(Screen screen) {
 	SDL_SetRenderDrawColor(renderer, 0xAA, 0xAA, 0xAA, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
+
+	draw_screen(screen);
 
 	SDL_RenderPresent(renderer);
 	
 	SDL_Delay(3);
 
 	return 0;
+}
+
+int Renderer::draw_screen(Screen screen) {
+	int tile_size = 15;
+
+	SDL_Rect tile;
+
+	tile.x = 0;
+	tile.y = 0;
+	tile.w = tile_size;
+	tile.h = tile_size;
+
+	SDL_Colour on  = {0x99, 0x99, 0x11, SDL_ALPHA_OPAQUE};
+	SDL_Colour off = {0x33, 0x33, 0x00, SDL_ALPHA_OPAQUE};
+
+	for (int y = 0; y < 32; y++) {
+		for (int x = 0; x < 64; x++) {
+			tile.x = x * tile_size;
+			tile.y = y * tile_size;
+			
+			SDL_Colour c;
+			if (screen.pixels[x][y]) {
+				c = on;	
+			} else {
+				c = off;
+			}
+
+			SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
+			SDL_RenderFillRect(renderer, &tile);
+		}
+	}
+
+	return 0;
+
+
 }
 
 int Renderer::quit() {
