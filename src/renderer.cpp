@@ -64,32 +64,36 @@ int Renderer::draw(Screen screen) {
 }
 
 int Renderer::draw_screen(Screen screen) {
+	
+	SDL_Colour on  = {0xFF, 0xFF, 0x33, SDL_ALPHA_OPAQUE};
+	SDL_Colour off = {0x88, 0x88, 0x22, SDL_ALPHA_OPAQUE};
+
 	int tile_size = 15;
 
 	SDL_Rect tile;
 
 	tile.x = 0;
 	tile.y = 0;
+	tile.w = 64 * tile_size;
+	tile.h = 32 * tile_size;
+	
+	SDL_SetRenderDrawColor(renderer, off.r, off.g, off.b, off.a);
+	SDL_RenderFillRect(renderer, &tile);
+
+	SDL_SetRenderDrawColor(renderer, on.r, on.g, on.b, on.a);
+
 	tile.w = tile_size;
 	tile.h = tile_size;
-
-	SDL_Colour on  = {0xCC, 0xCC, 0x11, SDL_ALPHA_OPAQUE};
-	SDL_Colour off = {0x66, 0x66, 0x00, SDL_ALPHA_OPAQUE};
 
 	for (int y = 0; y < 32; y++) {
 		for (int x = 0; x < 64; x++) {
 			tile.x = x * tile_size;
 			tile.y = y * tile_size;
-			
-			SDL_Colour c;
+	
 			if (screen.pixels[x][y]) {
-				c = on;	
-			} else {
-				c = off;
+				SDL_RenderFillRect(renderer, &tile);
 			}
 
-			SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
-			SDL_RenderFillRect(renderer, &tile);
 		}
 	}
 	return 0;

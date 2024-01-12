@@ -4,7 +4,7 @@ int main (int argc, char *argv[]) {
 
 	Chip8 emu;
 
-	if (emu.load_rom("../roms/nontest/chip8-roms-master/games/Cave.ch8") != 0) {
+	if (emu.load_rom("../roms/tests/6-keypad.ch8") != 0) {
 		return 1;
 	}
 	

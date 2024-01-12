@@ -4,7 +4,6 @@
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_timer.h>
 #include <cstdint>
-#include <cstdlib>
 #include <iomanip>
 #include <iostream>
 #include <fstream>
@@ -78,7 +77,7 @@ int Chip8::run() {
 		Chip8::decode();
 		Chip8::handle_input();
 		Chip8::execute();
-		SDL_Delay(1000/120);
+		//SDL_Delay(1000/120);
 	}
 
 	return 0;
@@ -327,7 +326,7 @@ bool Chip8::is_a_key_pressed() {
 void Chip8::handle_input() {
 	SDL_Event event;
 	
-	if (SDL_PollEvent(&event)) {
+	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 			case SDL_QUIT:
 				should_quit = true;
@@ -388,7 +387,6 @@ void Chip8::handle_input() {
 				}
 				break;
 				case SDL_KEYUP:
-				//clear_keys();
 				switch (event.key.keysym.sym) {
 					case SDLK_1:
 						chip_keys[0x1] = 0;
@@ -436,11 +434,10 @@ void Chip8::handle_input() {
 						chip_keys[0xB] = 0;
 						break;
 					case SDLK_v:
-						chip_keys[0xF] = 1;
+						chip_keys[0xF] = 0;
 						break;
 				}
 				break;
-
 		}
 	}
 }
