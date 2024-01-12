@@ -73,7 +73,7 @@ int Chip8::run() {
 
 	std::chrono::high_resolution_clock::time_point cycleStart, cycleEnd;
 	int cycleLen = 0;
-
+	int count = 0;
 	clear_keys();
 
 	while (!should_quit) {
@@ -81,11 +81,14 @@ int Chip8::run() {
 		
 		cycleStart = std::chrono::high_resolution_clock::now();
 		cycleEnd = std::chrono::high_resolution_clock::now();
-		
+		count++;	
 		Chip8::fetch();
 		Chip8::decode();
 		
-		while (cycleLen < 1000 / 250) {
+		while (cycleLen < 1000 / 100) {
+			if (count % 10 == 0) {
+				rend.draw(disp);
+			}
 			handle_input();
 			cycleEnd = std::chrono::high_resolution_clock::now();
 			cycleLen = (cycleEnd - cycleStart)/std::chrono::milliseconds(1)*1000;
@@ -184,7 +187,7 @@ void Chip8::execute() {
 						registers[0xf] = (x > 0xff) ? 1 : 0;
 						break;
 					}
-				case 0x5: // 8XY5 VX = VX - VY also set Vf if X > Y 
+				case 0x5: // 8XY5 VX = VX - VY also set Vf if X >= Y 
 					{
 					uint8_t x = (registers[opFields.x] >= registers[opFields.y]) ? 1 : 0;
 					registers[opFields.x] -= registers[opFields.y];
@@ -198,7 +201,7 @@ void Chip8::execute() {
 					registers[0xf] = x;
 					break;
 					}
-			case 0x7: // 8XY7 VX = VY - VX also set VF if Y > X
+			case 0x7: // 8XY7 VX = VY - VX also set VF if Y >= X
 					{
 					uint8_t x = (registers[opFields.y] >= registers[opFields.x]) ? 1 : 0;
 					registers[opFields.x] = registers[opFields.y] - registers[opFields.x];

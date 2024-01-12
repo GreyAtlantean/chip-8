@@ -4,14 +4,15 @@ int main (int argc, char *argv[]) {
 
 	Chip8 emu;
 
-	if (emu.load_rom("../roms/tests/4-flags.ch8") != 0) {
+	if (argc == 2) {
+		if (emu.load_rom(argv[1])) {
+			return 1;
+		}
+	} else if (emu.load_rom("../roms/tests/2-ibm-logo.ch8") != 0) {
 		return 1;
 	}
 	
-	//emu.print_mem();
-	//emu.print_font();
 	emu.run();	
-	
 
 	return 0;
 }
