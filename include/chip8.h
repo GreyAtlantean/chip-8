@@ -57,7 +57,8 @@ class Chip8 {
 		bool is_a_key_pressed();
 		
 		uint8_t get_key();
-
+		
+		bool key_released;
 		
 		bool should_quit;
 	

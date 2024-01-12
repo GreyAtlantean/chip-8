@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <random>
+#include <chrono>
 
 
 Chip8::Chip8() : disp(64, 32){
@@ -56,7 +57,8 @@ Chip8::Chip8() : disp(64, 32){
 	for (int i = 0; i < 200; i++) {
 		rend.draw(disp);
 	}
-
+	
+	key_released = false;
 	should_quit = false;
 }
 
@@ -69,15 +71,28 @@ Chip8::~Chip8() {
 
 int Chip8::run() {
 
+	std::chrono::high_resolution_clock::time_point cycleStart, cycleEnd;
+	int cycleLen = 0;
+
 	clear_keys();
 
 	while (!should_quit) {
 		// TODO make this loop execute at 60Hz
+		
+		cycleStart = std::chrono::high_resolution_clock::now();
+		cycleEnd = std::chrono::high_resolution_clock::now();
+		
 		Chip8::fetch();
 		Chip8::decode();
-		Chip8::handle_input();
+		
+		while (cycleLen < 1000 / 250) {
+			handle_input();
+			cycleEnd = std::chrono::high_resolution_clock::now();
+			cycleLen = (cycleEnd - cycleStart)/std::chrono::milliseconds(1)*1000;
+		}
+		cycleLen = 0;
+		
 		Chip8::execute();
-		//SDL_Delay(1000/120);
 	}
 
 	return 0;
@@ -165,26 +180,39 @@ void Chip8::execute() {
 				case 0x4: // 8XY4 VX = VX + VY
 					{
 						unsigned x = (unsigned)registers[opFields.x] + (unsigned)registers[opFields.y];
-						registers[0xf] = (x > 0xff) ? 1 : 0;
 						registers[opFields.x] += registers[opFields.y];
+						registers[0xf] = (x > 0xff) ? 1 : 0;
 						break;
 					}
 				case 0x5: // 8XY5 VX = VX - VY also set Vf if X > Y 
-					registers[0xf] = (registers[opFields.x] > registers[opFields.y]) ? 1 : 0;
+					{
+					uint8_t x = (registers[opFields.x] >= registers[opFields.y]) ? 1 : 0;
 					registers[opFields.x] -= registers[opFields.y];
+					registers[0xf] = x;
 					break;
+					}
 				case 0x6: // 8XY6 shift VX to the right 
-					registers[0xf] = registers[opFields.x] & 0x1;
+					{
+					uint8_t x = registers[opFields.x] & 0x1;
 					registers[opFields.x] >>= 1;
+					registers[0xf] = x;
 					break;
-				case 0x7: // 8XY7 VX = VY - VX also set VF if Y > X
-					registers[0xf] = (registers[opFields.y] > registers[opFields.x]) ? 1 : 0;
+					}
+			case 0x7: // 8XY7 VX = VY - VX also set VF if Y > X
+					{
+					uint8_t x = (registers[opFields.y] >= registers[opFields.x]) ? 1 : 0;
 					registers[opFields.x] = registers[opFields.y] - registers[opFields.x];
+					registers[0xf] = x;
 					break;
+					}
 				case 0xe: // 8XYE shift VX to the left
-					registers[0xf] = registers[opFields.x] & 0x8;
+					{
+					registers[opFields.x] = registers[opFields.y];
+					uint8_t x = (registers[opFields.x] >> 7) & 0x1;
 					registers[opFields.x] <<= 1;
+					registers[0xf] = x;	
 					break;
+					}
 			}
 			break;
 		case 0x9: // 9XY0 - skip
@@ -253,9 +281,12 @@ void Chip8::execute() {
 				case 0x0A: // FX0A - get key
 					if (!is_a_key_pressed()) {
 						chip_PC -= 2;
+					} else if (is_a_key_pressed() && !key_released) {
+						chip_PC -= 2;
 					} else {
 						registers[opFields.x] = get_key();
-					} 
+						key_released = false;
+					}
 					break;
 				case 0x15: // FX15 - set delay timer to VX
 					delayTimer = registers[opFields.x];
@@ -387,6 +418,7 @@ void Chip8::handle_input() {
 				}
 				break;
 				case SDL_KEYUP:
+				key_released = true;
 				switch (event.key.keysym.sym) {
 					case SDLK_1:
 						chip_keys[0x1] = 0;
@@ -463,8 +495,6 @@ int Chip8::load_rom(const char* fname) {
 	for (std::ifstream f(fname, std::ios::binary); f.good();) {
 		chip_mem[offset++ & 0xFFF] = f.get();
 	}
-
-//	chip_mem[0x1FF] = 1;
 
 	rom.close();
 	return 0;
