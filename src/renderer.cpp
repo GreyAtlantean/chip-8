@@ -57,8 +57,6 @@ int Renderer::draw(Screen screen) {
 	draw_screen(screen);
 
 	SDL_RenderPresent(renderer);
-	
-	SDL_Delay(3);
 
 	return 0;
 }

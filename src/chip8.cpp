@@ -85,7 +85,7 @@ int Chip8::run() {
 		Chip8::fetch();
 		Chip8::decode();
 		
-		while (cycleLen < 1000 / 100) {
+		while (cycleLen < 1000 / 60) {
 			if (count % 10 == 0) {
 				rend.draw(disp);
 			}
