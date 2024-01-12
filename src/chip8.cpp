@@ -173,12 +173,15 @@ void Chip8::execute() {
 					break;
 				case 0x1: // 8XY1 VX = VX | VY
 					registers[opFields.x] |= registers[opFields.y];
+					// quirk registers[0xf] = 0;
 					break;
 				case 0x2: // 8XY2 VX = VX & VY
 					registers[opFields.x] &= registers[opFields.y];
+					// quirk registers[0xf] = 0;
 					break;
 				case 0x3: // 8XY3 VX = VX xor VY
 					registers[opFields.x] ^= registers[opFields.y];
+					// qurik registers[0xf] = 0;
 					break;
 				case 0x4: // 8XY4 VX = VX + VY
 					{

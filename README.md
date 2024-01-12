@@ -49,11 +49,17 @@ make
 
 ### Screenshots
 
+IBM Logo 
 ![ScreenShot One](/screenshots/IBM.png?raw=true "Screenshot One IBM")
+Corax instructions test
 ![ScreenShot Two](/screenshots/CoraxInstructions.png?raw=true "Screenshot Two CoraxInstructions")
+VF Flags test
 ![ScreenShot Three](/screenshots/Flags.png?raw=true "Screenshot Three Flags")
+Sierpinski triangle programs
 ![ScreenShot Four](/screenshots/Sierpinski.png?raw=true "Screenshot One Sierpinski")
+Particles
 ![ScreenShot Five](/screenshots/Particles.png?raw=true "Screenshot One Particles")
+Tron 
 ![ScreenShot Six](/screenshots/Tron.png?raw=true "Screenshot One Tron")
 
 ### Missing Features
