@@ -41,11 +41,11 @@ Ensure SDL2 is installed on your system.
 
 Run the following from the build folder:
 
-cmake ..
+ cmake ..
 
-make
+ make
 
-./chip-8
+ ./chip-8
 
 ### Screenshots
 
@@ -68,3 +68,15 @@ Tron
 
 ### Known Issues
     - Test 6 - keyboard not passing block on release
+
+### Resources Referenced
+
+- https://tobiasvl.github.io/blog/write-a-chip-8-emulator/#fetchdecodeexecute-loop
+
+
+- https://github.com/Timendus/chip8-test-suite
+
+
+- http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
+
+
