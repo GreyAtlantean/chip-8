@@ -308,7 +308,6 @@ void Chip8::execute() {
 					registers[0xf] = chip_I > 0xfff ? 1 : 0;
 					break;
 				case 0x29: // FX29 Font char
-					std::cout << "font stuff AAAAA\n";
 					chip_I = (uint16_t)fontMemStart + (uint16_t)registers[opFields.x] * 5;
 					break;
 				case 0x33: // FX33 Binary coded decimal conversion 
