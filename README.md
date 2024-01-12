@@ -68,4 +68,3 @@ Tron
 
 ### Known Issues
     - Test 6 - keyboard not passing block on release
-    - Test 5 - quirks - fails with segfault!

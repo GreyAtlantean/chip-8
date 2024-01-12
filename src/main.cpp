@@ -11,6 +11,9 @@ int main (int argc, char *argv[]) {
 	} else if (emu.load_rom("../roms/tests/2-ibm-logo.ch8") != 0) {
 		return 1;
 	}
+
+	//emu.print_mem();
+	//emu.print_font();
 	
 	emu.run();	
 

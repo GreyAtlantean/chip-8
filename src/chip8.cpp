@@ -46,9 +46,9 @@ Chip8::Chip8() : disp(64, 32){
 	};
 
 	// copy fontset into memory
-	unsigned offset = 0x00;
+	unsigned offset = fontMemStart;
 	for (const uint8_t& byte : fontset) {
-		chip_mem[fontMemStart + offset++] = byte;
+		chip_mem[offset++] = byte;
 	}
 	
 	// Init SDL stuff
@@ -106,6 +106,7 @@ void Chip8::fetch() {
 	
 	currOP = (chip_mem[chip_PC] << 8 | chip_mem[chip_PC + 1]);
 
+	// std::cout << std::hex << static_cast<int>(currOP) << "\n";
 	chip_PC += 2;
 }
 
@@ -242,8 +243,16 @@ void Chip8::execute() {
 				registers[0xF] = 0;
 
 				for (uint8_t row = 0; row < opFields.n; row++) {
+					// bounds check
+					if (y + row >= disp.screen_h) {
+						break;
+					}
 					unsigned sprite = chip_mem[chip_I + row];
 					for (uint8_t col = 0; col < 8; col++) {
+						// bounds check
+						if (x + col >= disp.screen_w) {
+							break;
+						}
 						// if the current bit is on in the sprite
 						if ((sprite & 0x80) != 0) {
 							// toggle the pixel - if it was on already set Vf to 1
@@ -252,14 +261,8 @@ void Chip8::execute() {
 							}
 							disp.pixels[x + col][y + row] ^= 1;
 						}
-						if (x + col >= disp.screen_w) {
-							break;
-						}
 					// shift the sprite one to the left	
 					sprite <<= 1;
-					}
-					if (y + row >= disp.screen_h) {
-						break;
 					}
 				}
 				rend.draw(disp);
@@ -305,7 +308,8 @@ void Chip8::execute() {
 					registers[0xf] = chip_I > 0xfff ? 1 : 0;
 					break;
 				case 0x29: // FX29 Font char
-					chip_I = fontMemStart + registers[opFields.x] * 5;
+					std::cout << "font stuff AAAAA\n";
+					chip_I = (uint16_t)fontMemStart + (uint16_t)registers[opFields.x] * 5;
 					break;
 				case 0x33: // FX33 Binary coded decimal conversion 
 					{
